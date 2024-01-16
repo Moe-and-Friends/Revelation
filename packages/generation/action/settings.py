@@ -4,7 +4,7 @@ from actions import Action
 # For performance and simplicity's sake, the configuration of chance is saved as "config as code".
 # We can re-evaluate this approach in the future.
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 
 ACTION_SETTINGS = [
     {

@@ -58,9 +58,9 @@ def main(event):
                 "duration_mins": timeout_duration_mins,
                 "duration_display_str": timeout_duration_str,
                 "lower_bound_mins": lower_bound_mins,
-                "lower_bound_display_str": action["timeout"]["lower_bound"],
+                "lower_bound_display_str": lower_bound_str,
                 "upper_bound_mins": upper_bound_mins,
-                "upper_bound_display_str": action["timeout"]["upper_bound"]}
+                "upper_bound_display_str": upper_bound_str}
             })
 
     return {
