@@ -3,6 +3,7 @@ import random
 from cerberus import Validator
 
 from actions import Action
+from intervals import convert_interval_str_to_minutes, convert_minutes_to_display_str
 from settings import ACTION_SETTINGS, ACTION_WEIGHTS, VERSION
 
 # Cerberus Schema
@@ -42,10 +43,24 @@ def main(event):
         "type": action["action"]
     }
     if action["action"] == Action.TIMEOUT:
+
+        lower_bound_str = action["timeout"]["lower_bound"]
+        lower_bound_mins = convert_interval_str_to_minutes(lower_bound_str)
+
+        upper_bound_str = action["timeout"]["upper_bound"]
+        upper_bound_mins = convert_interval_str_to_minutes(upper_bound_str)
+
+        timeout_duration_mins = random.randint(lower_bound_mins, upper_bound_mins)
+        timeout_duration_str = convert_minutes_to_display_str(timeout_duration_mins)
+
         response_action.update(
             {"timeout": {
-                "lower_bound_str": action["timeout"]["lower_bound"],
-                "upper_bound_str": action["timeout"]["upper_bound"]}
+                "duration_mins": timeout_duration_mins,
+                "duration_display_str": timeout_duration_str,
+                "lower_bound_mins": lower_bound_mins,
+                "lower_bound_display_str": action["timeout"]["lower_bound"],
+                "upper_bound_mins": upper_bound_mins,
+                "upper_bound_display_str": action["timeout"]["upper_bound"]}
             })
 
     return {

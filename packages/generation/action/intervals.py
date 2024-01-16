@@ -10,7 +10,6 @@ _TIME_CONVERSION_INTERVALS = (
     ('minutes', _MINUTES_IN_MINUTES)
 )
 
-
 def convert_interval_str_to_minutes(interval: str) -> int:
     # Strip out non-numeric characters
     time = int("".join(filter(str.isdigit, interval)))
