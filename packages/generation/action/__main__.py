@@ -1,16 +1,9 @@
 import random
 
 from cerberus import Validator
-from enum import Enum
 
-
-# Types of supported Actions. Usable as string objects.
-class Action(str, Enum):
-    BAN = "BAN"
-    KICK = "KICK"
-    DO_NOTHING = "DO_NOTHING"
-    TIMEOUT = "TIMEOUT"
-
+from actions import Action
+from settings import ACTION_SETTINGS, ACTION_WEIGHTS, VERSION
 
 # Cerberus Schema
 REQUEST_SCHEMA = {
@@ -30,27 +23,7 @@ REQUEST_SCHEMA = {
     }
 }
 
-CONFIG = [
-    {
-        "action": Action.TIMEOUT,
-        "weight": 999,
-        "timeout": {
-            "lower_bound": "1m",
-            "upper_bound": "20m"
-        }
-    },
-    {
-        "action": Action.KICK,
-        "weight": 1,
-    }
-]
-
-# Compute a list of weights for selection for the type of action to return.
-WEIGHTS = [action.get("weight", 0) for action in CONFIG]
-
-
 def main(event):
-    # Validate for correct data.
     validator = Validator(REQUEST_SCHEMA, allow_unknown=True, require_all=True)
     if not validator.validate(event):
         return {
@@ -58,8 +31,27 @@ def main(event):
             "statusCode": 406
         }
 
-    action = random.choices(CONFIG, weights=WEIGHTS, k=1)# # #
+    response_metadata = {
+        "is_manual_value": False,
+        "version": VERSION
+    }
+
+    action = random.choices(ACTION_SETTINGS, weights=ACTION_WEIGHTS, k=1)[0]
+
+    response_action = {
+        "type": action["action"]
+    }
+    if action["action"] == Action.TIMEOUT:
+        response_action.update(
+            {"timeout": {
+                "lower_bound_str": action["timeout"]["lower_bound"],
+                "upper_bound_str": action["timeout"]["upper_bound"]}
+            })
+
     return {
-        "body": {"action": action},
+        "body": {
+            "action": response_action,
+            "metadata": response_metadata
+        },
         "statusCode": 200
     }
